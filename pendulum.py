@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class Pendulum:
-    def __init__(self, m2: float):
+    def __init__(self, identifier: int, m2: float):
         # Constants
         self.m1, self.m2 = 2.0, m2
         self.l1, self.l2 = 1, 1
@@ -15,6 +15,7 @@ class Pendulum:
 
         # Data settings
         self.data = []
+        self.identifier = identifier
 
     def reset(self):
         self.data = []
@@ -94,6 +95,8 @@ class Pendulum:
 
     def save(self) -> pd.DataFrame:
         df = pd.DataFrame(data=self.data, columns=['x1', 'y1', 'x2', 'y2', 'v1', 'v2', 'a1', 'a2'])
+        df['id'] = self.identifier
+        df['m2'] = self.m2
         df = df.round(2)
         return df
 
