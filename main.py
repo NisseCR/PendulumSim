@@ -10,7 +10,7 @@ def export(df: pd.DataFrame, name: str):
 
 def main():
     gen = Generator()
-    samples = gen.generate(sample_size=5, mass_lower=1.0, mass_upper=2.0, interval=1.0)
+    samples = gen.generate(sample_size=5, mass_lower=2.0, mass_upper=2.0, interval=1.0)
 
     results = []
     for mass, angles in samples:
@@ -23,6 +23,7 @@ def main():
 
             # Analyse
             print(f"#{identifier} Mass: {mass} | Angles: ({a1}, {a2})")
+            print(df)
             results.append(df)
 
 

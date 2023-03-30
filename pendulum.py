@@ -11,7 +11,7 @@ class Pendulum:
         self.m1, self.m2 = 2.0, m2
         self.l1, self.l2 = 1, 1
         self.g = 9.81
-        self.scale = 100
+        self.scale = 150
 
         # Data settings
         self.data = []
@@ -81,10 +81,23 @@ class Pendulum:
         c = 0
         while t < duration:
             # Get point mass positions
-            coordinates = self.get_points(state[2], state[3])
+            theta1dot = state[0]
+            theta2dot = state[1]
+            theta1 = state[2]
+            theta2 = state[3]
+            coordinates = self.get_points(theta1, theta2)
+
+            # Get kinetic and potential energy
+            # T = .5 * self.m1 * self.l1 ** 2 * theta1dot ** 2 + .5 * self.m2 * (
+            #             self.l2 ** 2 * theta2dot ** 2 + 2 * self.l1 * self.l2 * theta1dot * theta2dot * cos(
+            #         theta1 - theta2) + self.l1 ** 2 * theta1dot ** 2)
+            # U = -(self.m1 + self.m2) * self.g * self.l1 * cos(theta1) - self.m2 * self.g * self.m2 * cos(theta2)
+
+            T = 0.5 * self.m1 * self.l1 ** 2 * theta1dot ** 2 + 0.5 * self.m2 * (self.l1 ** 2 * theta1dot ** 2 + self.l2 ** 2 * theta2dot ** 2 + 2 * self.l1 * self.l2 * theta1dot * theta2dot * cos(theta1 - theta2))
+            U = -(self.m1 + self.m2) * self.g * self.l1 * cos(theta1) - self.m2 * self.g * self.l2 * cos(theta2)
 
             # Save data
-            self.data.append(np.concatenate((coordinates, state), axis=0))
+            self.data.append(np.concatenate((coordinates, state, np.array([T, U])), axis=0))
 
             # Get next state
             t += delta_t
@@ -94,9 +107,10 @@ class Pendulum:
             c += 1
 
     def save(self) -> pd.DataFrame:
-        df = pd.DataFrame(data=self.data, columns=['x1', 'y1', 'x2', 'y2', 'v1', 'v2', 'a1', 'a2'])
+        df = pd.DataFrame(data=self.data, columns=['x1', 'y1', 'x2', 'y2', 'v1', 'v2', 'a1', 'a2', 'T', 'U'])
         df['id'] = self.identifier
         df['m2'] = self.m2
+        df['tEnergy'] = df['T'] + df['U']
         df = df.round(2)
         return df
 
