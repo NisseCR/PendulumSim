@@ -87,12 +87,6 @@ class Pendulum:
             theta2 = state[3]
             coordinates = self.get_points(theta1, theta2)
 
-            # Get kinetic and potential energy
-            # T = .5 * self.m1 * self.l1 ** 2 * theta1dot ** 2 + .5 * self.m2 * (
-            #             self.l2 ** 2 * theta2dot ** 2 + 2 * self.l1 * self.l2 * theta1dot * theta2dot * cos(
-            #         theta1 - theta2) + self.l1 ** 2 * theta1dot ** 2)
-            # U = -(self.m1 + self.m2) * self.g * self.l1 * cos(theta1) - self.m2 * self.g * self.m2 * cos(theta2)
-
             T = 0.5 * self.m1 * self.l1 ** 2 * theta1dot ** 2 + 0.5 * self.m2 * (self.l1 ** 2 * theta1dot ** 2 + self.l2 ** 2 * theta2dot ** 2 + 2 * self.l1 * self.l2 * theta1dot * theta2dot * cos(theta1 - theta2))
             U = -(self.m1 + self.m2) * self.g * self.l1 * cos(theta1) - self.m2 * self.g * self.l2 * cos(theta2)
 
@@ -112,6 +106,7 @@ class Pendulum:
         df['m2'] = self.m2
         df['tEnergy'] = df['T'] + df['U']
         df = df.round(2)
+        df = df.reset_index()
         return df
 
     def run(self, a1: float, a2: float, duration: float) -> pd.DataFrame:
